@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cấu Phần 3: Chương Trình Can Thiệp Thực Nghiệm 7 Ngày</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc !important; color: #1e293b; margin: 0; }
+        header.sticky { background-color: rgba(15, 23, 42, 0.96) !important; color: #94a3b8 !important; }
+        section.bg-gradient-to-br { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important; color: #ffffff !important; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-indigo-500 selection:text-white">
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+    <!-- BỘ ĐẾM THỜI GIAN TRUY CẬP WEB (Dán vào bên trong thanh Header) -->
+    <div class="flex items-center gap-2.5 bg-slate-800/90 border border-slate-700 px-3 py-1.5 rounded-xl text-xs shrink-0 shadow-sm">
+    <span class="relative flex h-2.5 w-2.5">
+        <span id="online-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span id="online-dot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+    </span>
+    <div class="text-slate-300 flex items-center gap-1.5">
+        <i class="fa-regular fa-clock text-indigo-400"></i>
+        <span>Phiên: <strong id="session-time" class="text-white font-mono">00:00</strong></span>
+        <span class="text-slate-600">|</span>
+        <span title="Tổng thời gian tích lũy trên hệ thống">Tổng: <strong id="total-web-time" class="text-emerald-400 font-mono">0p 00s</strong></span>
+    </div>
+    <button onclick="resetWebTime()" title="Đặt lại bộ đếm thời gian" class="text-slate-500 hover:text-rose-400 transition ml-1">
+        <i class="fa-solid fa-rotate-right text-[11px]"></i>
+    </button>
+    </div>
+    <!-- HEADER STICKY -->
+    <header class="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md text-slate-400 py-3.5 px-4 sm:px-6 border-b border-slate-800 shadow-lg">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 block">Hệ thống Giải pháp Thực nghiệm • Cấu phần 3 (2.3.3)</span>
+                <h1 class="font-bold text-white text-sm sm:text-base leading-tight mt-0.5">Chương Trình Can Thiệp 7 Ngày (Lộ Trình Chuyển Hóa Thói Quen)</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white">
+                    Tiến độ hoàn thành: <span id="progress-Count" class="text-emerald-400 font-bold">0/7</span> ngày
+                </div>
+                <a href="#report-day7" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition">
+                    Xuất Báo Cáo Ngày 7
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO BANNER -->
+    <section class="bg-gradient-to-br from-slate-900 via-indigo-950 to-indigo-900 text-white py-10 sm:py-12 px-4 sm:px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="max-w-3xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 text-xs font-medium mb-3">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Tiến trình tâm lý học hành vi: Nhận thức → Hành động → Phản xạ → Duy trì</span>
+                </div>
+                <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">
+                    Lộ Trình Thực Nghiệm Chuẩn Hóa 7 Ngày
+                </h2>
+                <p class="text-indigo-100 text-sm sm:text-base leading-relaxed">
+                    Đưa các công cụ số (AI Eisenhower, Trạm Deep Work, Nhật ký JOMO) vào vận hành thực tế theo từng bước từ Ngày 1 đến Ngày 7, kết thúc bằng Báo cáo định lượng cá nhân và bài đánh giá Post-test.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+
+        <!-- DANH SÁCH 7 NGÀY CAN THIỆP -->
+        <div id="days-container" class="space-y-4">
+            <!-- Render tự động từ dữ liệu chuẩn 7 ngày -->
+        </div>
+
+        <!-- CÔNG CỤ ĐẶC BIỆT NGÀY 4: BẢNG PHÂN BỔ KHỐI THỜI GIAN (TIME BLOCKING) -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+            <div class="flex items-center justify-between flex-wrap gap-2 mb-4 pb-3 border-b border-slate-100">
+                <div>
+                    <span class="text-xs font-bold uppercase text-indigo-600">Công cụ Thực hành Ngày 4</span>
+                    <h3 class="font-bold text-slate-900 text-base sm:text-lg">Bảng Thiết Lập Khối Thời Gian Cố Định (Time Blocking)</h3>
+                </div>
+                <span class="text-xs bg-indigo-50 text-indigo-700 font-semibold px-3 py-1 rounded-full">Khung giờ tự học buổi tối</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                    <div class="font-bold text-indigo-700 mb-1">Khối 1: 19h30 – 20h15 (45 phút)</div>
+                    <input id="tb-1" onchange="saveTimeBlocks()" type="text" value="Môn trọng tâm 1 (Giải bài tập Vật lý / Toán)" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 bg-white font-medium">
+                    <p class="text-[11px] text-slate-500 mt-1.5">Trạng thái: Chặn tuyệt đối thông báo MXH</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                    <div class="font-bold text-emerald-700 mb-1">Khối 2: 20h25 – 21h10 (45 phút)</div>
+                    <input id="tb-2" onchange="saveTimeBlocks()" type="text" value="Môn trọng tâm 2 (Đọc hiểu / Ôn chuyên đề)" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 bg-white font-medium">
+                    <p class="text-[11px] text-slate-500 mt-1.5">Trạng thái: Vận hành Trạm Deep Work</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                    <div class="font-bold text-amber-700 mb-1">Khối 3: 21h15 – 21h30 (15 phút)</div>
+                    <input id="tb-3" onchange="saveTimeBlocks()" type="text" value="Kiểm tra tin nhắn cần thiết & Ghi Nhật ký JOMO" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-300 bg-white font-medium">
+                    <p class="text-[11px] text-slate-500 mt-1.5">Trạng thái: Tổng kết & Thư giãn đầu óc</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CÔNG CỤ ĐẶC BIỆT NGÀY 7: HỆ THỐNG TỰ ĐỘNG XUẤT BÁO CÁO TỔNG KẾT 7 NGÀY & CAM KẾT DUY TRÌ -->
+        <section id="report-day7" class="scroll-mt-24 bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl p-6 sm:p-8 shadow-lg">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-white/15">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Tổng kết Ngày 7 • Đánh giá Post-test</span>
+                    <h3 class="text-xl sm:text-2xl font-extrabold mt-1">Báo Cáo Tổng Kết Cá Nhân Sau 7 Ngày Thực Nghiệm</h3>
+                    <p class="text-xs sm:text-sm text-indigo-200 mt-1">Dữ liệu được tổng hợp để đối chiếu Pre-test & Post-test và xây dựng kế hoạch duy trì lâu dài.</p>
+                </div>
+                <button onclick="window.print()" class="bg-white text-slate-900 hover:bg-indigo-50 text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 shrink-0">
+                    <i class="fa-solid fa-file-export"></i> Xuất / In Báo Cáo Cá Nhân
+                </button>
+            </div>
+
+            <!-- 3 Chỉ số định lượng chính -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+                <div class="bg-white/10 border border-white/15 rounded-xl p-4">
+                    <div class="text-xs text-indigo-200">Tổng thời gian học sâu (Deep Work)</div>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <input id="rep-deep" type="number" value="315" onchange="saveReportMetrics()" class="w-24 bg-transparent text-3xl font-extrabold text-emerald-400 border-b border-white/30 focus:outline-none">
+                        <span class="text-sm text-indigo-200">phút / 7 ngày</span>
+                    </div>
+                </div>
+                <div class="bg-white/10 border border-white/15 rounded-xl p-4">
+                    <div class="text-xs text-indigo-200">Tổng số lần Vượt cám dỗ (Kháng Dopamine)</div>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <input id="rep-urge" type="number" value="24" onchange="saveReportMetrics()" class="w-20 bg-transparent text-3xl font-extrabold text-amber-400 border-b border-white/30 focus:outline-none">
+                        <span class="text-sm text-indigo-200">lần kiềm chế</span>
+                    </div>
+                </div>
+                <div class="bg-white/10 border border-white/15 rounded-xl p-4">
+                    <div class="text-xs text-indigo-200">Chỉ số JOMO trung bình (Thang Likert 1-5)</div>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <input id="rep-jomo" type="number" step="0.1" max="5" value="4.5" onchange="saveReportMetrics()" class="w-20 bg-transparent text-3xl font-extrabold text-cyan-300 border-b border-white/30 focus:outline-none">
+                        <span class="text-sm text-indigo-200">/ 5.0 điểm</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cam kết duy trì lâu dài -->
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                <label class="block text-xs font-bold uppercase tracking-wider text-emerald-300 mb-2">Bản cam kết cá nhân duy trì thói quen sau chương trình 7 ngày:</label>
+                <textarea id="commitment-text" onchange="saveReportMetrics()" rows="2" class="w-full bg-slate-900/80 border border-slate-700 rounded-lg p-3 text-xs sm:text-sm text-white focus:outline-none" placeholder="Nhập cam kết duy trì của bạn...">Tôi cam kết duy trì việc lập Ma trận Eisenhower vào tối Chủ nhật hằng tuần và đặt điện thoại cách xa bàn học 2 mét trong khung giờ vàng 19h30 - 21h30 mỗi tối.</textarea>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const sevenDaysData = [
+            {
+                day: 1,
+                title: "Ngày 1: Nhận thức thực trạng và Làm quen với Pomodoro",
+                content: "Khảo sát lại biểu đồ sử dụng thời gian thực tế qua lịch sử màn hình điện thoại (Screen Time); học sinh làm quen với việc chia nhỏ thời gian học tập bằng chu kỳ Pomodoro kết hợp kiểm soát thông báo cơ bản.",
+                linkText: "Mở Đồng hồ Pomodoro (Web 1)",
+                linkUrl: "https://andeptryqua1908.github.io/tramdeepwork/#stage-2",
+                badge: "Nhận thức"
+            },
+            {
+                day: 2,
+                title: "Ngày 2: Xây dựng rào cản số và Cắt đứt tác nhân xao nhãng",
+                content: "Thực hành thiết lập '3 lớp rào cản kỹ thuật số' (ẩn ứng dụng gây nghiện, bật chế độ tập trung trên thiết bị); thực hiện danh sách kiểm tra môi trường học tập trước giờ tự học (Environment Check).",
+                linkText: "Thiết lập 3 Lớp Rào Cản (Web 2)",
+                linkUrl: "https://andeptryqua1908.github.io/nhatkijomo/#stage-1",
+                badge: "Chặn tác nhân"
+            },
+            {
+                day: 3,
+                title: "Ngày 3: Thiết lập mục tiêu tuần bằng Ma trận Eisenhower",
+                content: "Sử dụng trợ lý AI trên nền tảng web để lọc bỏ các nhiệm vụ rác, phân chia rõ ràng các công việc học tập cấp bách, quan trọng và xác định rõ Danh sách từ bỏ (JOMO List) trong tuần.",
+                linkText: "Lập Ma trận Eisenhower với AI (Web 1)",
+                linkUrl: "https://andeptryqua1908.github.io/tramdeepwork/#stage-1",
+                badge: "Lập kế hoạch"
+            },
+            {
+                day: 4,
+                title: "Ngày 4: Ứng dụng Time Blocking và Tối ưu hóa không gian số",
+                content: "Phân bổ thời gian biểu trong ngày thành các khối thời gian cố định (Time Blocking) cho từng môn học cụ thể; thực hành kỹ thuật chặn tuyệt đối các thông báo mạng xã hội trong các khối giờ học sâu.",
+                linkText: "Điền Bảng Time Blocking bên dưới",
+                linkUrl: "#tb-1",
+                badge: "Time Blocking"
+            },
+            {
+                day: 5,
+                title: "Ngày 5: Vận hành Trạm Deep Work và Trải nghiệm JOMO",
+                content: "Đẩy mạnh thời gian học tập tại Trạm Deep Work, sử dụng thành thạo nút bấm '+1 Lần Vượt Cám Dỗ' để ghi nhận chỉ số kháng Dopamine; chính thức cảm nhận sự nhẹ nhõm, tập trung cao độ từ trạng thái JOMO (Joy Of Missing Out).",
+                linkText: "Vận hành Trạm Deep Work (Web 1)",
+                linkUrl: "https://andeptryqua1908.github.io/tramdeepwork/#stage-2",
+                badge: "Hành động sâu"
+            },
+            {
+                day: 6,
+                title: "Ngày 6: Tự giám sát, Đánh giá chéo và Điều chỉnh kế hoạch",
+                content: "Học sinh đối chiếu dữ liệu số liệu tích lũy từ hệ thống web qua 5 ngày; tự đánh giá mức độ hoàn thành mục tiêu, nhận diện các điểm gãy trong thói quen và thực hiện điều chỉnh kế hoạch học tập cho ngày tiếp theo.",
+                linkText: "Ghi Nhật ký Phản tư JOMO (Web 2)",
+                linkUrl: "https://andeptryqua1908.github.io/nhatkijomo/#stage-3",
+                badge: "Tự giám sát"
+            },
+            {
+                day: 7,
+                title: "Ngày 7: Tổng kết kết quả, Đánh giá Post-test và Xây dựng kế hoạch duy trì",
+                content: "Hệ thống tự động xuất báo cáo tổng kết 7 ngày của cá nhân (tổng phút Deep Work, tổng số lần vượt cám dỗ, chỉ số JOMO trung bình); học sinh làm bài kiểm tra đánh giá sau can thiệp (Post-test) và lập cam kết cá nhân để duy trì thói quen quản lí thời gian lâu dài.",
+                linkText: "Xem Báo cáo Tổng kết & Post-test",
+                linkUrl: "#report-day7",
+                badge: "Tổng kết & Duy trì"
+            }
+        ];
+
+        let completedDays = JSON.parse(localStorage.getItem('khtn_7days_done')) || [true, false, false, false, false, false, false];
+
+        function renderDays() {
+            const container = document.getElementById('days-container');
+            container.innerHTML = '';
+            let doneCount = 0;
+
+            sevenDaysData.forEach((item, idx) => {
+                const isDone = completedDays[idx];
+                if (isDone) doneCount++;
+
+                const card = document.createElement('div');
+                card.className = `rounded-2xl border p-5 transition shadow-sm ${isDone ? 'bg-emerald-50/50 border-emerald-300' : 'bg-white border-slate-200'}`;
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-start gap-3.5">
+                            <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleDay(${idx})" class="mt-1 w-5 h-5 text-emerald-600 rounded cursor-pointer">
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap mb-1">
+                                    <span class="text-[11px] font-bold uppercase px-2.5 py-0.5 rounded-md ${isDone ? 'bg-emerald-600 text-white' : 'bg-indigo-100 text-indigo-700'}">${item.badge}</span>
+                                    <h3 class="font-bold text-slate-900 text-sm sm:text-base ${isDone ? 'line-through text-slate-500' : ''}">${item.title}</h3>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">${item.content}</p>
+                            </div>
+                        </div>
+                        <a href="${item.linkUrl}" class="shrink-0 bg-slate-900 hover:bg-indigo-600 text-white text-xs font-semibold px-3.5 py-2 rounded-xl transition self-start sm:self-center">
+                            ${item.linkText} ↗
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('progress-Count').innerText = `${doneCount}/7`;
+            localStorage.setItem('khtn_7days_done', JSON.stringify(completedDays));
+        }
+
+        function toggleDay(idx) {
+            completedDays[idx] = !completedDays[idx];
+            renderDays();
+        }
+
+        function saveTimeBlocks() {
+            const tb = [
+                document.getElementById('tb-1').value,
+                document.getElementById('tb-2').value,
+                document.getElementById('tb-3').value
+            ];
+            localStorage.setItem('khtn_timeblocks', JSON.stringify(tb));
+        }
+
+        function saveReportMetrics() {
+            const metrics = {
+                deep: document.getElementById('rep-deep').value,
+                urge: document.getElementById('rep-urge').value,
+                jomo: document.getElementById('rep-jomo').value,
+                commit: document.getElementById('commitment-text').value
+            };
+            localStorage.setItem('khtn_day7_report', JSON.stringify(metrics));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDays();
+            // Tự động đồng bộ số phút Deep Work và số lần vượt cám dỗ nếu học sinh mở trên cùng trình duyệt
+            const autoDeep = localStorage.getItem('khtn_deep_minutes');
+            const autoUrge = localStorage.getItem('khtn_urge_count');
+            if (autoDeep && parseInt(autoDeep) > 0) document.getElementById('rep-deep').value = autoDeep;
+            if (autoUrge && parseInt(autoUrge) > 0) document.getElementById('rep-urge').value = autoUrge;
+        });
+    </script>
+    <script>
+    // ================= BỘ ĐẾM THỜI GIAN TRUY CẬP WEB (CHỐNG TREO TAB ẢO) =================
+    (function initWebTimeTracker() {
+        const STORAGE_TIME_KEY = 'khtn_total_web_seconds';
+        let sessionSeconds = 0;
+        let totalWebSeconds = parseInt(localStorage.getItem(STORAGE_TIME_KEY)) || 0;
+
+        const sessionEl = document.getElementById('session-time');
+        const totalEl = document.getElementById('total-web-time');
+        const pingEl = document.getElementById('online-ping');
+        const dotEl = document.getElementById('online-dot');
+
+        // Định dạng mm:ss cho phiên hiện tại
+        function formatMMSS(sec) {
+            const hrs = Math.floor(sec / 3600);
+            const mins = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+            const secs = String(sec % 60).padStart(2, '0');
+            return hrs > 0 ? `${hrs}:${mins}:${secs}` : `${mins}:${secs}`;
+        }
+
+        // Định dạng tổng thời gian tích lũy (VD: 1h 25p hoặc 14p 30s)
+        function formatTotalTime(sec) {
+            const hrs = Math.floor(sec / 3600);
+            const mins = Math.floor((sec % 3600) / 60);
+            const secs = String(sec % 60).padStart(2, '0');
+            if (hrs > 0) return `${hrs}h ${mins}p`;
+            return `${mins}p ${secs}s`;
+        }
+
+        function updateTimeUI() {
+            if (sessionEl) sessionEl.innerText = formatMMSS(sessionSeconds);
+            if (totalEl) totalEl.innerText = formatTotalTime(totalWebSeconds);
+
+            // Nếu trang có ô tổng hợp thời gian truy cập ở Giai đoạn 3 hoặc Báo cáo Ngày 7 thì tự động điền luôn
+            const summaryWebMin = document.getElementById('summary-web-min');
+            if (summaryWebMin) {
+                summaryWebMin.innerText = Math.max(1, Math.round(totalWebSeconds / 60));
+            }
+        }
+
+        // Đếm từng giây (Chỉ cộng thời gian khi học sinh đang mở tab hiển thị trên màn hình)
+        setInterval(() => {
+            if (!document.hidden) {
+                sessionSeconds++;
+                totalWebSeconds++;
+                localStorage.setItem(STORAGE_TIME_KEY, totalWebSeconds);
+                updateTimeUI();
+            }
+        }, 1000);
+
+        // Đổi màu đèn báo hiệu khi học sinh rời tab sang trang khác (chống treo máy ảo)
+        document.addEventListener('visibilitychange', () => {
+            if (!pingEl || !dotEl) return;
+            if (document.hidden) {
+                pingEl.classList.add('hidden');
+                dotEl.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500';
+            } else {
+                pingEl.classList.remove('hidden');
+                dotEl.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500';
+            }
+        });
+
+        // Hàm đặt lại thời gian nếu muốn đo chu kỳ mới
+        window.resetWebTime = function() {
+            if (confirm('Bạn có muốn đặt lại bộ đếm thời gian truy cập web về 00:00 không?')) {
+                sessionSeconds = 0;
+                totalWebSeconds = 0;
+                localStorage.setItem(STORAGE_TIME_KEY, 0);
+                updateTimeUI();
+            }
+        };
+
+        // Khởi chạy hiển thị ngay khi mở trang
+        updateTimeUI();
+    })();
+    </script>
+</body>
+</html>
